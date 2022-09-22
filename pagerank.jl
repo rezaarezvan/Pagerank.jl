@@ -1,6 +1,6 @@
 using Random, LinearAlgebra, Distributions, StatsBase, DiscreteMarkovChains
 
-function checkregularity(P)
+function check_regularity(P)
 Pn = P
         for i in 1:100
                 Pn *= P
@@ -24,7 +24,7 @@ println("\n")
 println(q)
 end
 
-function get_PagerankMatrix(A, λ)
+function get_pagerank_matrix(A, λ)
         sz = size(A)
         n = sz[1]
         Pr = zeros(Float64, sz[1], sz[2])
@@ -49,20 +49,39 @@ function get_PagerankMatrix(A, λ)
         return Pr
 end
 
-Aex = [ 0 1 1 1 
+function random_surfer(P_ex, num_steps)
+        sz = size(P_ex)
+        max = sz[1]
+        current_row      = 1
+        println("Start in $current_row")
+        for i = 1:num_steps
+                next_state       = 0
+                next_state_index = 0
+                while next_state == 0
+                        next_state_index = rand((1:max))
+                        next_state = P_ex[current_row, next_state_index]
+                end
+                println("Next state: $next_state_index")
+                current_row = next_state_index
+        end
+end
+
+A_ex = [ 0 1 1 1 
         0 0 1 1
         1 0 0 0
         1 0 1 0 ]
 
-P = [ 0 1/3 1/3 1/3 
+P_ex = [ 0 1/3 1/3 1/3 
         0 0 1/2 1/2
         1 0 0 0
         1/2 0 1/2 0 ]
 
-Pr = [  0 1/3 1/3 1/3 
-        0 0 1/2 1/2
-        1 0 0 0
-        1/2 0 1/2 0 ]
-
+P_r = [   0.125  0.291667  0.291667  0.291667
+          0.125  0.125     0.375     0.375
+          0.625  0.125     0.125     0.125
+          0.375  0.125     0.375     0.125]
+          
 λ = 0.5
-Pres = get_PagerankMatrix(Aex, λ)
+# P_res = get_pagerank_matrix(A_ex, λ)
+# random_surfer(P_ex, 10)
+# check_regularity(P_ex)
