@@ -1,4 +1,4 @@
-using Random, LinearAlgebra, Distributions, StatsBase, DiscreteMarkovChains
+using DiscreteMarkovChains, BenchmarkTools
 
 function check_regularity(P)
 Pn = P
@@ -12,19 +12,16 @@ Pn = P
         end
 end
 
-function get_q(P, λ)
-Q = P
-        for i in 1:1000
-                Q *= P
-        end
-        display(Q)
-
-q = Q[1, :]
-println("\n")
-println(q)
+function get_q(P::Matrix)::Vector{Float64}
+        Q = P
+                for i in 1:1000
+                        Q *= P
+                end
+        q = Q[1, :]
+        return q
 end
 
-function get_pagerank_matrix(A, λ)
+function get_q_pagerank_matrix(A::Matrix, λ::Float64)::Vector
         sz = size(A)
         n = sz[1]
         Pr = zeros(Float64, sz[1], sz[2])
@@ -44,12 +41,11 @@ function get_pagerank_matrix(A, λ)
                 i = i + 1
                 j = 1
         end
-        display(Pr)
-        
-        return Pr
+        q = get_q(Pr)
+        return q
 end
 
-function random_surfer(P_ex, num_steps)
+function random_surfer(P_ex::Matrix, num_steps::Integer)
         sz = size(P_ex)
         max = sz[1]
         current_row      = 1
@@ -71,6 +67,10 @@ A_ex = [ 0 1 1 1
         1 0 0 0
         1 0 1 0 ]
 
+G_ex = [ 1 1 1  
+         0 1 1 
+         1 0 1 ]
+
 P_ex = [ 0 1/3 1/3 1/3 
         0 0 1/2 1/2
         1 0 0 0
@@ -81,7 +81,10 @@ P_r = [   0.125  0.291667  0.291667  0.291667
           0.625  0.125     0.125     0.125
           0.375  0.125     0.375     0.125]
           
-λ = 0.5
-# P_res = get_pagerank_matrix(A_ex, λ)
-# random_surfer(P_ex, 10)
-# check_regularity(P_ex)
+λ = 0.0
+q_res_example = get_q_pagerank_matrix(A_ex, λ)
+println(q_res_example)
+q_res_general = get_q_pagerank_matrix(G_ex, λ)
+println(q_res_general)
+random_surfer(P_ex, 10)
+check_regularity(P_ex)
