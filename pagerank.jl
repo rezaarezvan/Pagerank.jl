@@ -1,5 +1,14 @@
 using DiscreteMarkovChains, BenchmarkTools
 
+#= Using the DiscreteMarkovChains.jl library we can get the stationary distribution aswell
+function get_stationary_distribution(A::Matrix)::Vector 
+        P = DiscreteMarkovChain(A)
+        q = stationary_distribution(P)
+
+        return q
+end
+=# 
+
 # Checks if a given matrix is regular or not
 function check_regularity(P::Matrix)
 Pn = P
@@ -24,7 +33,7 @@ function get_q(P::Matrix)::Vector{Float64}
 end
 
 # get the q vector wich solves q=qP, where P is the Pagerank matrix, input is a adjacency matrix and λ
-function get_q_pagerank_matrix(A::Matrix, λ::Float64)::Vector
+function get_q_pagerank_matrix(A::Matrix, λ::Float64)
         sz = size(A)
         n = sz[1]
         Pr = zeros(Float64, sz[1], sz[2])
@@ -34,18 +43,16 @@ function get_q_pagerank_matrix(A::Matrix, λ::Float64)::Vector
         for row in eachrow(A)
                 n_i = count(x -> x == 1, row) 
                 for index in row
-                        if A[i,j] == 1
-                                Pr[i,j] = (1 - λ)/n_i + λ/n
-                        else
-                                Pr[i,j] = λ/n
-                        end
+                        Pr[i, j] = A[i, j] * (1 - λ)/n_i + λ/n
                         j = j + 1
                 end
                 i = i + 1
                 j = 1
         end
-        q = get_q(Pr)
-        return q
+        display(Pr)
+        return
+        #q = get_q(Pr)
+        #return q
 end
 
 # Simulates a random surfer which takes num_steps of steps in a given Stochastic/Markov matrix
@@ -72,6 +79,11 @@ A_ex = [ 0 1 1 1
         1 0 0 0
         1 0 1 0 ]
 
+A = [ 0 1 0 0 
+        1 0 0 0
+        0 1 0 1
+        1 0 1 0 ]
+
 # Another example adjacency matrix
 G_ex = [ 1 1 1  
          0 1 1 
@@ -91,7 +103,7 @@ P_r = [   0.125  0.291667  0.291667  0.291667
 
 
 # Dampening factor, which describes how "bored" the surfer is getting
-λ = 0.0
+λ = 0.15
 
 #= For question 1(h)
         u = [ 1/4 1/4 1/4 1/4 ]
@@ -109,3 +121,6 @@ println(q_res_general)
 random_surfer(P_ex, 10)
 check_regularity(P_ex)
 =#
+#q_res_example = get_q_pagerank_matrix(A, λ)
+q = get_stationary_distribution(P_ex)
+display(q)
