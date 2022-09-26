@@ -11,25 +11,27 @@ end
 
 # Checks if a given matrix is regular or not
 function check_regularity(P::Matrix)
-Pn = P
-        for i in 1:100
-                Pn *= P
-        end
-        if(isempty(findall(<=(0), Pn)))
+        P ^= 100;
+        if(isempty(findall(<=(0), P)))
                 println("Regular!")
+                return true
         else
                 println("Not Regular!")
+                return false
         end
 end
 
 # get the q vector which solves q=qP
 function get_q(P::Matrix)::Vector{Float64}
-        Q = P
-                for i in 1:1000
-                        Q *= P
-                end
-        q = Q[1, :]
-        return q
+        isRegular = check_regularity(P)
+        if isRegular == true
+                P ^= 100;
+                q = P[1, :]
+                return q
+        else
+                return [-1.0, -1.0, -1.0] 
+        end
+
 end
 
 # get the q vector wich solves q=qP, where P is the Pagerank matrix, input is a adjacency matrix and λ
@@ -44,15 +46,13 @@ function get_q_pagerank_matrix(A::Matrix, λ::Float64)
                 n_i = count(x -> x == 1, row) 
                 for index in row
                         Pr[i, j] = A[i, j] * (1 - λ)/n_i + λ/n
-                        j = j + 1
+                        j += 1
                 end
-                i = i + 1
-                j = 1
+                i += 1
+                j  = 1
         end
-        display(Pr)
-        return
-        #q = get_q(Pr)
-        #return q
+        q = get_q(Pr)
+        return q
 end
 
 # Simulates a random surfer which takes num_steps of steps in a given Stochastic/Markov matrix
@@ -112,7 +112,6 @@ P_r = [   0.125  0.291667  0.291667  0.291667
         println(ans)
 =#
 
-#= 
 get_q(P_ex)
 q_res_example = get_q_pagerank_matrix(A_ex, λ)
 println(q_res_example)
@@ -120,7 +119,3 @@ q_res_general = get_q_pagerank_matrix(G_ex, λ)
 println(q_res_general)
 random_surfer(P_ex, 10)
 check_regularity(P_ex)
-=#
-#q_res_example = get_q_pagerank_matrix(A, λ)
-q = get_stationary_distribution(P_ex)
-display(q)
