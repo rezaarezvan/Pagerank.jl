@@ -43,7 +43,7 @@ function get_q_pagerank_matrix(A::Matrix, λ::Float64)
         j = 1; 
         
         for row in eachrow(A)
-                n_i = count(x -> x == 1, row) 
+                n_i = count(==(1), row)
                 for index in row
                         Pr[i, j] = A[i, j] * (1 - λ)/n_i + λ/n
                         j += 1
@@ -79,7 +79,7 @@ A_ex = [ 0 1 1 1
         1 0 0 0
         1 0 1 0 ]
 
-A = [ 0 1 0 0 
+A = [   0 1 0 0 
         1 0 0 0
         0 1 0 1
         1 0 1 0 ]
@@ -112,6 +112,7 @@ P_r = [   0.125  0.291667  0.291667  0.291667
         println(ans)
 =#
 
+#=
 get_q(P_ex)
 q_res_example = get_q_pagerank_matrix(A_ex, λ)
 println(q_res_example)
@@ -119,3 +120,4 @@ q_res_general = get_q_pagerank_matrix(G_ex, λ)
 println(q_res_general)
 random_surfer(P_ex, 10)
 check_regularity(P_ex)
+=#
