@@ -1,4 +1,5 @@
-using DiscreteMarkovChains, BenchmarkTools
+using DiscreteMarkovChains
+using BenchmarkTools
 
 #= Using the DiscreteMarkovChains.jl library we can get the stationary distribution aswell
 function get_stationary_distribution(A::Matrix)::Vector 
@@ -10,7 +11,7 @@ end
 =# 
 
 # Checks if a given matrix is regular or not
-function check_regularity(P::Matrix)
+function check_regularity(P::Matrix)::Bool
         P ^= 100;
         if(isempty(findall(<=(0), P)))
                 println("Regular!")
