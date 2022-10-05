@@ -5,12 +5,13 @@ using BenchmarkTools
 function get_stationary_distribution(A::Matrix)::Vector 
         P = DiscreteMarkovChain(A)
         q = stationary_distribution(P)
-
         return q
 end
 =# 
 
-# Checks if a given matrix is regular or not
+# Checks if a given input Markov Matrix is regular by taking it to the exponent of 100
+# http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf
+# From the original PageRank paper, Google found that after around 52 iterations you would get a good estimation for the stationary distribution
 function check_regularity(P::Matrix)::Bool
         P ^= 100;
         if(isempty(findall(<=(0), P)))
@@ -22,7 +23,7 @@ function check_regularity(P::Matrix)::Bool
         end
 end
 
-# get the q vector which solves q=qP
+# Returns the q vector which solves for the equation q = qP, where P is the given input Markov Matrix
 function get_q(P::Matrix)::Vector{Float64}
         isRegular = check_regularity(P)
         if isRegular == true
@@ -32,10 +33,10 @@ function get_q(P::Matrix)::Vector{Float64}
         else
                 return [-1.0, -1.0, -1.0] 
         end
-
 end
 
-# get the q vector wich solves q=qP, where P is the Pagerank matrix, input is a adjacency matrix and λ
+# Returns the q vector which solves for the equation q = qP, where A is the given adjacency matrix transformed
+# to the PageRank matrix, P, and λ is the dampening factor
 function get_q_pagerank_matrix(A::Matrix, λ::Float64)
         sz = size(A)
         n = sz[1]
@@ -56,7 +57,7 @@ function get_q_pagerank_matrix(A::Matrix, λ::Float64)
         return q
 end
 
-# Simulates a random surfer which takes num_steps of steps in a given Stochastic/Markov matrix
+# Returns a simulation a random surfer which takes num_steps of steps in a given Stochastic/Markov matrix
 function random_surfer(P_ex::Matrix, num_steps::Integer)
         sz = size(P_ex)
         max = sz[1]
@@ -96,7 +97,7 @@ P_ex = [ 0 1/3 1/3 1/3
         1 0 0 0
         1/2 0 1/2 0 ]
 
-#  A example Pagerank matrix given a λ
+#  A example Pagerank matrix given a λ = 0.5
 P_r = [   0.125  0.291667  0.291667  0.291667
           0.125  0.125     0.375     0.375
           0.625  0.125     0.125     0.125
@@ -104,7 +105,7 @@ P_r = [   0.125  0.291667  0.291667  0.291667
 
 
 # Dampening factor, which describes how "bored" the surfer is getting
-λ = 0.15
+λ = 0.5
 
 #= For question 1(h)
         u = [ 1/4 1/4 1/4 1/4 ]
